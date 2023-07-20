@@ -1,0 +1,87 @@
+SERVER
+
+import socket
+import threading
+import random
+
+# List of quotes
+quotes = [
+    "The only way to do great work is to love what you do. - Steve Jobs",
+    "Success is not final, failure is not fatal: It is the courage to continue that counts. - Winston Churchill",
+    "Your time is limited, don't waste it living someone else's life. - Steve Jobs",
+    "Life is what happens when you're busy making other plans. - John Lennon",
+    "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
+    "In the end, it's not the years in your life that count. It's the life in your years. - Abraham Lincoln",
+    "The only limit to our realization of tomorrow will be our doubts of today. - Franklin D. Roosevelt",
+    "The best preparation for tomorrow is doing your best today. - H. Jackson Brown, Jr.",
+    "Happiness is not something you postpone for the future; it is something you design for the present. - Jim Rohn",
+    "Believe you can and you're halfway there. - Theodore Roosevelt"
+]
+
+def get_random_quote():
+    return random.choice(quotes)
+
+def handle_client(connection, address):
+    try:
+        print(f"Connected to client: {address}")
+
+        quote = get_random_quote()
+        connection.send(quote.encode())
+
+    except Exception as e:
+        print(f"Error occurred: {e}")
+    finally:
+        connection.close()
+        print(f"Connection closed for client: {address}")
+
+def main():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = "0.0.0.0"  # Listen on all available interfaces
+    port = 8888
+
+    server_socket.bind((host, port))
+    server_socket.listen(5)
+
+    print(f"QOTD Server listening on {host}:{port}...")
+
+    while True:
+        try:
+            connection, address = server_socket.accept()
+            client_thread = threading.Thread(target=handle_client, args=(connection, address))
+            client_thread.start()
+        except KeyboardInterrupt:
+            print("Server shutting down...")
+            break
+
+    server_socket.close()
+
+if __name__ == "__main__":
+main()
+
+
+
+CLIENT
+
+
+import socket
+
+def main():
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = "192.168.64.132"  # Use the server's IP address or hostname here
+    port = 8888
+
+    try:
+        client_socket.connect((host, port))
+
+        quote = client_socket.recv(1024).decode()
+        print("Quote of the Day:", quote)
+
+    except ConnectionRefusedError:
+        print("Connection to the server refused. Make sure the server is running.")
+    except Exception as e:
+        print("Error occurred:", e)
+    finally:
+        client_socket.close()
+
+if __name__ == "__main__":
+    main() 
