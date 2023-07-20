@@ -1,0 +1,104 @@
+SERVER 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <arpa/inet.h>
+
+#define PORT 8888 
+
+int main() {
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        perror("Bind failed");
+        exit(EXIT_FAILURE);
+    }
+
+    
+    if (listen(server_fd, 1) < 0) {
+        perror("Listen failed");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Server listening on port %d...\n", PORT);
+
+    while (1) {
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
+            perror("Accept failed");
+            exit(EXIT_FAILURE);
+        }
+
+        
+        int random_number = rand() % 900 + 100;
+
+        send(new_socket, &random_number, sizeof(random_number), 0);
+
+        printf("Sent random number: %d\n", random_number);
+
+        close(new_socket); // Close the connection to the client
+    }
+
+    return 0;
+}
+
+
+ 
+CLIENT
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <arpa/inet.h>
+
+#define PORT 8888
+
+int main() {
+    int client_socket;
+    struct sockaddr_in server_address;
+    int addrlen = sizeof(server_address);
+
+    // Create socket
+    if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Set server address
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(PORT);
+
+    // Convert IPv4 and IPv6 addresses from text to binary form
+    if (inet_pton(AF_INET, "192.168.64.132", &server_address.sin_addr) <= 0) {
+        perror("Invalid address/ Address not supported");
+        exit(EXIT_FAILURE);
+    }
+
+    if (connect(client_socket, (struct sockaddr *)&server_address, sizeof(server_address)) < 0) {
+        perror("Connection failed. Make sure the server is running.");
+        exit(EXIT_FAILURE);
+    }
+
+    int received_number;
+   
+    if (recv(client_socket, &received_number, sizeof(received_number), 0) < 0) {
+        perror("Receive failed");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Received random number: %d\n", received_number);
+
+    close(client_socket); // Close the connection
+
+    return 0;
+}
