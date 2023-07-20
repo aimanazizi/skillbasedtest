@@ -6,16 +6,16 @@ import random
 
 # List of quotes
 quotes = [
-    "The only way to do great work is to love what you do. - Steve Jobs",
-    "Success is not final, failure is not fatal: It is the courage to continue that counts. - Winston Churchill",
-    "Your time is limited, don't waste it living someone else's life. - Steve Jobs",
-    "Life is what happens when you're busy making other plans. - John Lennon",
-    "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
+     “When you change your thoughts, remember to also change your world.—Norman Vincent Peale”,
+    “I never dreamed about success. I worked for it. —Estée Lauder”,
+    “Either you run the day or the day runs you. — Jim Rohn”,
+    “When we strive to become better than we are, everything around us becomes better too.— Paulo Coelho",
+    “Setting goals is the first step in turning the invisible into the visible. — Tony Robbins",
     "In the end, it's not the years in your life that count. It's the life in your years. - Abraham Lincoln",
-    "The only limit to our realization of tomorrow will be our doubts of today. - Franklin D. Roosevelt",
     "The best preparation for tomorrow is doing your best today. - H. Jackson Brown, Jr.",
-    "Happiness is not something you postpone for the future; it is something you design for the present. - Jim Rohn",
-    "Believe you can and you're halfway there. - Theodore Roosevelt"
+    "Pada akhirnya, apa yang kucinta berubah menjadi trauma – Ari Lesmana",
+    "At the end of the day, we all are travellers in our own life. - Hamzah"
+
 ]
 
 def get_random_quote():
