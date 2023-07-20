@@ -1,0 +1,67 @@
+SERVER 
+
+
+import socket
+
+def bar_to_atmosphere(pressure):
+    return pressure * 0.986923
+
+def main():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = "0.0.0.0"  
+    port = 8888
+
+    server_socket.bind((host, port))
+    server_socket.listen(1)
+
+    print("Server listening on {}:{}".format(host, port))
+
+    while True:
+        connection, address = server_socket.accept()
+        print("Connected to client:", address)
+
+        try:
+            data = connection.recv(1024)
+            if not data:
+                break
+
+            pressure_bar = float(data.decode())
+            atmosphere_standard = bar_to_atmosphere(pressure_bar)
+
+            connection.send(str(atmosphere_standard).encode())
+            print("Sent atmosphere-standard value:", atmosphere_standard)
+        except ValueError:
+            print("Invalid pressure value received from client.")
+        finally:
+            connection.close()
+
+if __name__ == "__main__":
+main()
+
+
+ 
+CLIENT 
+
+import socket
+
+def main():
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    host = "192.168.64.132"  
+    port = 8888
+
+    try:
+        client_socket.connect((host, port))
+
+        pressure_bar = float(input("Enter the pressure in bar: "))
+
+        client_socket.send(str(pressure_bar).encode())
+        atmosphere_standard = client_socket.recv(1024).decode()
+
+        print("Received atmosphere-standard value:", atmosphere_standard)
+    except (ConnectionRefusedError, ValueError):
+        print("Failed to connect to the server or invalid pressure value.")
+    finally:
+        client_socket.close()
+
+if __name__ == "__main__":
+    main()
